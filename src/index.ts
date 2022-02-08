@@ -3,7 +3,6 @@ import bodyParser from 'body-parser'
 import { faker } from '@faker-js/faker'
 import { v4 as uuid } from 'uuid'
 import {match, none, Option, some} from "fp-ts/Option";
-import ro from "@faker-js/faker/dist/types/locales/ro";
 
 const port = 3000
 const app = express()
@@ -12,8 +11,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.listen(port, () => console.log(`Mock API listening on port ${port}`))
 
 if(require.main === module) {
-    console.log(process.argv.slice(2))
-    console.log(process.argv.slice(2).join(''))
     const schema: Schema = JSON.parse(process.argv.slice(2).join(''))
 
     const isFaker = (v: string) => v.split(".")[0] === "faker"
@@ -47,10 +44,6 @@ if(require.main === module) {
     )
 
 
-
-    //console.log(JSON.stringify(database, null, 4))
-
-
     Object.entries(schema).forEach(([key, value]) => {
 
         const route = `/${key}`
@@ -61,22 +54,29 @@ if(require.main === module) {
             return attributes.every(a => body.hasOwnProperty(a))
         }
 
+        const unfold = (records: Array<{[key: string]: any}>) => {
+            const table = schema[key]
+            const linkedAttributes = Object.entries(table).filter(([k, v]) => !isFaker(v)).map(([k, v]) => k)
+            return records.map(record => ({
+                ...record,
+                ...Object.fromEntries(linkedAttributes.map(a => [a, database[a].filter(b => b.id === record[a])[0]]))
+            }))
+        }
+
         app.get(route, (req, res) => {
-            res.send(database[key])
+            res.send(unfold(database[key]))
         })
 
         app.get(`${route}/:page`, (req, res) => {
-            const page = parseInt(route.params.page)
+            const page = parseInt(req.params.page)
 
             if(page) {
-                const page = route.params.page
-
                 res.send({
                     totals: {
                         page: page,
                         records: database[key].length
                     },
-                    records: database[key].slice((page - 1) * pageSize, page * pageSize)
+                    records: unfold(database[key].slice((page - 1) * pageSize, page * pageSize))
                 })
             } else {
                 res.send(database[key])
