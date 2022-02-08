@@ -74,6 +74,7 @@ if(require.main === module) {
                 res.send({
                     totals: {
                         page: page,
+                        pages: Math.ceil(database[key].length / pageSize),
                         records: database[key].length
                     },
                     records: unfold(database[key].slice((page - 1) * pageSize, page * pageSize))

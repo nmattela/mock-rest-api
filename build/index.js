@@ -47,7 +47,7 @@ if (require.main === module) {
             const linkedAttributes = Object.entries(table).filter(([k, v]) => !isFaker(v)).map(([k, v]) => k);
             return records.map(record => ({
                 ...record,
-                ...Object.fromEntries(linkedAttributes.map(a => [a, database[a].filter(b => b.id === record[a])[0]]))
+                ...Object.fromEntries(linkedAttributes.map(a => [a, unfold(database[a].filter(b => b.id === record[a]))[0]]))
             }));
         };
         app.get(route, (req, res) => {
