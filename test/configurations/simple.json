@@ -1,0 +1,12 @@
+{
+  "users": {
+    "name": "faker.name.findName()",
+    "age": "faker.datatype.number({min: 0, max: 99})",
+    "address": "address"
+  },
+  "address": {
+    "street": "faker.address.streetName()",
+    "zip": "faker.address.zipCode()",
+    "city": "faker.address.city()"
+  }
+}

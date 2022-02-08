@@ -6,10 +6,19 @@
   "author": "nmattela <nmattela@infogroep.be>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "build": "tsc",
+    "start": "tsc && node ./build/index.js",
+    "test": "tsc -p tsconfig.test.json && node ./build/test/test.js"
   },
   "dependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
-    "express": "^4.17.2"
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "fp-ts": "^2.11.8",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "typescript": "^4.5.5"
   }
 }
